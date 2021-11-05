@@ -25,7 +25,7 @@
  
 #ifndef MYSTL_UNINITIALIZED_H_
 #define MYSTL_UNINITIALIZED_H_
-#include "aliases.h"
+#include "algobase.h"
 #include "construct.h"
 #include "iterator.h"
 #include "type_traits.h"
