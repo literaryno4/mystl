@@ -103,7 +103,7 @@ ForwardIter uninitialized_copy_n(InputIter first, Size n, ForwardIter result) {
 template <class ForwardIter, class T>
 void unchecked_uninit_fill(ForwardIter first, ForwardIter last, const T& value,
                            std::true_type) {
-    mystl::fill(first, last, value)
+    mystl::fill(first, last, value);
 }
 
 template <class ForwardIter, class T>
@@ -123,11 +123,11 @@ void unchecked_uninit_fill(ForwardIter first, ForwardIter last, const T& value,
 }
 
 template <class ForwardIter, class T>
-void uninitailized_fill(ForwardIter first, ForwardIter last, const T& value) {
+void uninitialized_fill(ForwardIter first, ForwardIter last, const T& value) {
     mystl::unchecked_uninit_fill(
         first, last, value,
         std::is_trivially_copy_assignable <
-            typename iterator_traits<ForwardIter>::value_type{});
+            typename iterator_traits<ForwardIter>::value_type>{});
 }
 
 // uninitialize_fill_n
@@ -156,11 +156,11 @@ ForwardIter unchecked_uninit_fill_n(ForwardIter first, Size n, const T& value,
 }
 
 template <class ForwardIter, class Size, class T>
-ForwardIter uninitailized_fill_n(ForwardIter first, Size n, const T& value) {
+ForwardIter uninitialized_fill_n(ForwardIter first, Size n, const T& value) {
     return mystl::unchecked_uninit_fill_n(
         first, n, value,
         std::is_trivially_copy_assignable <
-            typename iterator_traits<ForwardIter>::value_type{});
+            typename iterator_traits<ForwardIter>::value_type>{});
 }
 
 // uninitializeed_move

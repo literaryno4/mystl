@@ -145,7 +145,7 @@ BidirectionalIter2 unchecked_copy_backward(BidirectionalIter1 first,
 template <class Tp, class Up>
 typename std::enable_if<
     std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
-        std::is_trivially_assignable<Up>::value,
+        std::is_trivially_copy_assignable<Up>::value,
     Up*>::type
 unchecked_copy_backward(Tp* first, Tp* last, Up* result) {
     const auto n = static_cast<size_t>(last - first);
@@ -153,7 +153,7 @@ unchecked_copy_backward(Tp* first, Tp* last, Up* result) {
         result -= n;
         std::memmove(result, first, n * sizeof(Up));
     }
-    result;
+    return result;
 }
 
 template <class BidirectionalIter1, class BidirectionalIter2>
@@ -280,7 +280,7 @@ BidirectionalIter2 unchecked_move_backward(BidirectionalIter1 first,
 template <class Tp, class Up>
 typename std::enable_if<
     std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
-        std::is_trivially_assignable<Up>::value,
+        std::is_trivially_move_assignable<Up>::value,
     Up*>::type
 unchecked_move_backward(Tp* first, Tp* last, Up* result) {
     const size_t n = static_cast<size_t>(last - first);
@@ -288,7 +288,7 @@ unchecked_move_backward(Tp* first, Tp* last, Up* result) {
         result -= n;
         std::memmove(result, first, n * sizeof(Up));
     }
-    result;
+    return result;
 }
 
 template <class BidirectionalIter1, class BidirectionalIter2>
@@ -313,7 +313,7 @@ bool equal(InputIter1 first1, InputIter1 last1, InputIter1 first2) {
 template <class InputIter1, class InputIter2, class Compared>
 bool equal(InputIter1 first1, InputIter1 last1, InputIter2 first2,
            Compared comp) {
-    for (; first1 != last1, ++first1, ++first2) {
+    for (; first1 != last1; ++first1, ++first2) {
         if (!comp(*first1, *first2)) {
             return false;
         }

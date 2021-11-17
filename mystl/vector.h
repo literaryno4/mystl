@@ -22,11 +22,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 #ifndef MYSTL_VECTOR_H_
 #define MYSTL_VECTOR_H_
 #include <initializer_list>
 
+#include "algo.h"
 #include "exceptdef.h"
 #include "iterator.h"
 #include "memory.h"
@@ -242,7 +243,7 @@ class vector {
     iterator erase(const_iterator first, const_iterator last);
     void clear() { erase(begin(), end()); }
 
-    void resize(size_type new_size) { return resize(neew_size, value_type()); }
+    void resize(size_type new_size) { return resize(new_size, value_type()); }
 
     void resize(size_type new_szie, const value_type& value);
     void reverse() { mystl::reverse(begin(), end()); }
@@ -313,7 +314,7 @@ void vector<T>::reserve(size_type n) {
             "n can not larger than max_size() in vector<T>::reserve()");
         const auto old_size = size();
         auto tmp = data_allocator::allocate(n);
-        mystl::uninitailized_move(begin_, end_, tmp);
+        mystl::uninitialized_move(begin_, end_, tmp);
         data_allocator::deallocate(begin_, cap_ - begin_);
         begin_ = tmp;
         end_ = tmp + old_size;
@@ -476,7 +477,7 @@ template <class T>
 void vector<T>::fill_init(size_type n, const value_type& value) {
     const size_type init_size = mystl::max(static_cast<size_type>(16), n);
     init_space(n, init_size);
-    mystl::uninitailized_fill_n(begin_, n, value);
+    mystl::uninitialized_fill_n(begin_, n, value);
 }
 
 template <class T>
@@ -485,7 +486,7 @@ void vector<T>::range_init(Iter first, Iter last) {
     const size_type init_size = mystl::max(static_cast<size_type>(last - first),
                                            static_cast<size_type>(16));
     init_space(static_cast<size_type>(last - first), init_size);
-    mystl::uninitailized_copy(first, last, begin_);
+    mystl::uninitialized_copy(first, last, begin_);
 }
 
 template <class T>
@@ -519,7 +520,7 @@ void vector<T>::fill_assign(size_type n, const value_type& value) {
         swap(tmp);
     } else if (n > size()) {
         mystl::fill(begin(), end(), value);
-        end_ = mystl::uninitailized_fill_n(end_, n - size(), value);
+        end_ = mystl::uninitialized_fill_n(end_, n - size(), value);
     } else {
         erase(mystl::fill_n(begin_, n, value), end_);
     }
@@ -590,7 +591,7 @@ void vector<T>::reallocate_insert(iterator pos, const value_type& value) {
     auto new_end = new_begin;
     const value_type& value_copy = value;
     try {
-        new_end = mystl::uninitialized_move(begin_, pos new_begin);
+        new_end = mystl::uninitialized_move(begin_, pos, new_begin);
         data_allocator::construct(mystl::address_of(*new_end), value_copy);
         ++new_end;
         new_end = mystl::uninitialized_move(pos, end_, new_end);
@@ -621,12 +622,12 @@ typename vector<T>::iterator vector<T>::fill_insert(iterator pos, size_type n,
             mystl::uninitialized_copy(end_ - n, end_, end_);
             end_ += n;
             mystl::move_backward(pos, old_end - n, old_end);
-            mystl::uninitailized_fill_n(pos, n, value_copy);
+            mystl::uninitialized_fill_n(pos, n, value_copy);
         } else {
             end_ =
-                mystl::uninitailized_fill_n(end_, n - after_elems, value_copy);
+                mystl::uninitialized_fill_n(end_, n - after_elems, value_copy);
             end_ = mystl::uninitialized_move(pos, old_end, end_);
-            mystl::uninitailized_fill_n(pos, after_elems, value_copy);
+            mystl::uninitialized_fill_n(pos, after_elems, value_copy);
         }
 
     } else {
@@ -635,7 +636,7 @@ typename vector<T>::iterator vector<T>::fill_insert(iterator pos, size_type n,
         auto new_end = new_begin;
         try {
             new_end = mystl::uninitialized_move(begin_, pos, new_begin);
-            new_end = mystl::uninitailized_fill_n(new_end, n, value);
+            new_end = mystl::uninitialized_fill_n(new_end, n, value);
             new_end = mystl::uninitialized_move(pos, end_, new_end);
         } catch (...) {
             destroy_and_recover(new_begin, new_end, new_size);
@@ -706,7 +707,7 @@ void vector<T>::reinsert(size_type size) {
 
     data_allocator::deallocate(begin_, cap_ - begin_);
     begin_ = new_begin;
-    end_ begin_ + size;
+    end_ = begin_ + size;
     cap_ = begin_ + size;
 }
 

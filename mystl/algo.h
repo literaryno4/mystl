@@ -46,7 +46,7 @@ bool
 all_of(InputIter first, InputIter last, UnaryPredicate unary_pred)
 {
     for (; first != last; ++first) {
-        if (!unary_pred(*fisrt)) {
+        if (!unary_pred(*first)) {
             return false;
         }
     }
@@ -58,7 +58,7 @@ bool
 any_of(InputIter first, InputIter last, UnaryPredicate unary_pred)
 {
     for (; first != last; ++first) {
-        if (unary_pred(*fisrt)) {
+        if (unary_pred(*first)) {
             return true;
         }
     }
@@ -70,7 +70,7 @@ bool
 none_of(InputIter first, InputIter last, UnaryPredicate unary_pred)
 {
     for (; first != last; ++first) {
-        if (unary_pred(*fisrt)) {
+        if (unary_pred(*first)) {
             return false;
         }
     }
@@ -260,7 +260,7 @@ find_end_dispatch(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2, 
     } else {
         auto result = last1;
         while (true) {
-            auto new_result = mystl::serch(first1, last1, first2, last2);
+            auto new_result = mystl::search(first1, last1, first2, last2);
             if (new_result == last1) {
                 return result;
             } else {
@@ -281,7 +281,7 @@ find_end_dispatch(BidirectionalIter1 first1, BidirectionalIter1 last1, Bidirecti
     typedef reverse_iterator<BidirectionalIter2> reviter2;
     reviter1 rlast1(first1);
     reviter2 rlast2(first2);
-    reviter1 rresult = mystl::serch(reviter1(last1), rlast1, reviter2(last2), rlast2);
+    reviter1 rresult = mystl::search(reviter1(last1), rlast1, reviter2(last2), rlast2);
     if (rresult == rlast1) {
         return last1;
     } else {
@@ -310,7 +310,7 @@ find_end_dispatch(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2, 
     } else {
         auto result = last1;
         while (true) {
-            auto new_result = mystl::serch(first1, last1, first2, last2, comp);
+            auto new_result = mystl::search(first1, last1, first2, last2, comp);
             if (new_result == last1) {
                 return result;
             } else {
@@ -332,7 +332,7 @@ find_end_dispatch(BidirectionalIter1 first1, BidirectionalIter1 last1, Bidirecti
     typedef reverse_iterator<BidirectionalIter2> reviter2;
     reviter1 rlast1(first1);
     reviter2 rlast2(first2);
-    reviter1 rresult = mystl::serch(reviter1(last1), rlast1, reviter2(last2), rlast2, comp);
+    reviter1 rresult = mystl::search(reviter1(last1), rlast1, reviter2(last2), rlast2, comp);
     if (rresult == rlast1) {
         return last1;
     } else {
@@ -679,13 +679,13 @@ erange_dispatch(RandomIter first, RandomIter last, const T& value, random_access
 {
     auto len  = last - first;
     auto half = len;
-    ForwardIter middle, left, right;
+    RandomIter middle, left, right;
     while (len > 0) {
         half   = len >> 1;
         middle = first + half;
         if (*middle < value) {
             first = middle + 1;
-            llen  = len - half - 1;
+            len  = len - half - 1;
         } else if (value < *middle) {
             len = half;
         } else {
@@ -738,13 +738,13 @@ erange_dispatch(RandomIter first, RandomIter last, const T& value, random_access
 {
     auto len  = last - first;
     auto half = len;
-    ForwardIter middle, left, right;
+    RandomIter middle, left, right;
     while (len > 0) {
         half   = len >> 1;
         middle = first + half;
         if (comp(*middle, value)) {
             first = middle + 1;
-            llen  = len - half - 1;
+            len  = len - half - 1;
         } else if (comp(value, *middle)) {
             len = half;
         } else {
@@ -940,7 +940,7 @@ max_element(ForwardIter first, ForwardIter last)
     auto result = first;
     while (++first != last) {
         if (*result < *first) {
-            return = first;
+            result = first;
         }
     }
     return result;
@@ -956,7 +956,7 @@ max_element(ForwardIter first, ForwardIter last, Compared comp)
     auto result = first;
     while (++first != last) {
         if (comp(*result, *first)) {
-            return = first;
+            result = first;
         }
     }
     return result;
@@ -973,7 +973,7 @@ min_element(ForwardIter first, ForwardIter last)
     auto result = first;
     while (++first != last) {
         if (*first < *result) {
-            return = first;
+            result = first;
         }
     }
     return result;
@@ -989,7 +989,7 @@ min_element(ForwardIter first, ForwardIter last, Compared comp)
     auto result = first;
     while (++first != last) {
         if (comp(*first, *result)) {
-            return = first;
+            result = first;
         }
     }
     return result;
@@ -1052,16 +1052,15 @@ remove(ForwardIter first, ForwardIter last, const T& value)
 
 // remove_copy_if
 template <class InputIter, class OutputIter, class UnaryPredicate>
-OutputIter
-remove_copy(InputIter first, InputIter last, OutputIter result, UnaryPredicate unary_pred)
-{
-    for (; first != last; ++first) {
-        if (!unary_pred(*first)) {
-            *result = *first;
-            ++result;
-        }
+OutputIter remove_copy_if(InputIter first, InputIter last, OutputIter result,
+                          UnaryPredicate unary_pred) {
+  for (; first != last; ++first) {
+    if (!unary_pred(*first)) {
+      *result = *first;
+      ++result;
     }
-    return result;
+  }
+  return result;
 }
 
 // remove_if
@@ -1069,7 +1068,7 @@ template <class ForwardIter, class UnaryPredicate>
 ForwardIter
 remove(ForwardIter first, ForwardIter last, UnaryPredicate unary_pred)
 {
-    first     = mystl::find(first, last, value);
+    first     = mystl::find_if(first, last, unary_pred);
     auto next = first;
     return first == last ? first : mystl::remove_copy_if(++next, last, first, unary_pred);
 }
@@ -1204,8 +1203,12 @@ rotate_dispatch(ForwardIter first, ForwardIter middle, ForwardIter last, forward
     auto new_middle = first;
     first2          = middle;
     while (first2 != last) {
-        mystl::swap(*first++, *first2++) if (first == middle) { middle = first2; }
-        else if (first2 == last) { first2 = middle; }
+        mystl::swap(*first++, *first2++);
+        if (first == middle) { 
+            middle = first2; 
+        } else if (first2 == last) { 
+            first2 = middle; 
+        }
     }
     return new_middle;
 }
@@ -1373,7 +1376,7 @@ is_permutation_aux(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2,
 
 template <class ForwardIter1, class ForwardIter2, class BinaryPred>
 bool
-is_permutation(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2, ForwardIter2 last2)
+is_permutation(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2, ForwardIter2 last2, BinaryPred pred)
 {
     return is_permutation_aux(first1, last1, first2, last2, pred);
 }
@@ -1383,7 +1386,7 @@ bool
 is_permutation(ForwardIter1 first1, ForwardIter1 last1, ForwardIter2 first2, ForwardIter2 last2)
 {
     typedef typename iterator_traits<ForwardIter1>::value_type v1;
-    typedef typename iterator_traits<ForwardIter2>::value_type v1;
+    typedef typename iterator_traits<ForwardIter2>::value_type v2;
     static_assert(std::is_same<v1, v2>::value, "the type should be same in mystl::is_permutation");
     return is_permutation_aux(first1, last1, first2, last2, mystl::equal_to<v1>());
 }
@@ -1594,7 +1597,7 @@ rotate_adaptive(BidirectionalIter1 first, BidirectionalIter1 middle, Bidirection
         return mystl::copy(buffer, buffer_end, first);
     } else if (len1 <= buffer_size) {
         buffer_end = mystl::copy(first, middle, buffer);
-        mystl::copy(middle, last, frist);
+        mystl::copy(middle, last, first);
         return mystl::copy_backward(buffer, buffer_end, last);
     } else {
         return mystl::rotate(first, middle, last);
@@ -1966,8 +1969,8 @@ intro_sort(RandomIter first, RandomIter last, Size depth_limit)
             return;
         }
         --depth_limit;
-        auto mid = mystl::median(*(first), *(first + (last - first) / 2), (last - 1));
-        auto cut = mystl::unchecked_partitioon(first, last, mid);
+        auto mid = mystl::median(*(first), *(first + (last - first) / 2), *(last - 1));
+        auto cut = mystl::unchecked_partition(first, last, mid);
         mystl::intro_sort(cut, last, depth_limit);
         last = cut;
     }
@@ -2003,7 +2006,7 @@ insertion_sort(RandomIter first, RandomIter last)
     if (first == last) {
         return;
     }
-    for (autoo i = first + 1; i != last; ++i) {
+    for (auto i = first + 1; i != last; ++i) {
         auto value = *i;
         if (value < *first) {
             mystl::copy_backward(first, i, i + 1);
@@ -2019,10 +2022,10 @@ void
 final_insertion_sort(RandomIter first, RandomIter last)
 {
     if (static_cast<size_t>(last - first) > kSmallSectionSize) {
-        mystl::insertioon_sort(first, first + kSmallSectionSize);
+        mystl::insertion_sort(first, first + kSmallSectionSize);
         mystl::unchecked_insertion_sort(first + kSmallSectionSize, last);
     } else {
-        mystl::insertioon_sort(first, last);
+        mystl::insertion_sort(first, last);
     }
 }
 

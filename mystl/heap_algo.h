@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-#ifndef MYSTLHEAP_ALGO_H
+#ifndef MYSTL_HEAP_ALGO_H
 #define MYSTL_HEAP_ALGO_H
 
 // heap algorithm: push_heap, pop_heap, sort_heap, make_heap
@@ -88,7 +88,7 @@ template <class RandomIter, class T, class Distance>
 void adjust_heap(RandomIter first, Distance htoleIndex, Distance len, T value) {
     auto topIndex = htoleIndex;
     auto rchild = 2 * htoleIndex + 2;
-    while (rchile < len) {
+    while (rchild < len) {
         if (*(first + rchild) < *(first + rchild - 1)) {
             --rchild;
         }
@@ -96,7 +96,7 @@ void adjust_heap(RandomIter first, Distance htoleIndex, Distance len, T value) {
         htoleIndex = rchild;
         rchild = 2 * (rchild + 1);
     }
-    if (rchild = len) {
+    if (rchild == len) {
         *(first + htoleIndex) = *(first + (rchild - 1));
         htoleIndex = rchild - 1;
     }

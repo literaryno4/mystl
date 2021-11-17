@@ -98,8 +98,8 @@ class temporary_buffer {
    private:
     void allocate_buffer();
     void initialize_buffer(const T&, std::true_type) {}
-    void initialize_buffer(const T&, value, std::false_type) {
-        mystl::uninitailized_fill_n(buffer, len, value);
+    void initialize_buffer(const T& value, std::false_type) {
+        mystl::uninitialized_fill_n(buffer, len, value);
     }
 
    private:

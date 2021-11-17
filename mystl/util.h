@@ -46,7 +46,7 @@ T&& forward(typename std::remove_reference<T>::type& arg) noexcept {
 
 template <class T>
 T&& forward(typename std::remove_reference<T>::type&& arg) noexcept {
-    static_cast(!std::is_value_reference<T>::value, "bad forward");
+    static_assert(!std::is_lvalue_reference<T>::value, "bad forward");
     return static_cast<T&&>(arg);
 }
 
@@ -61,7 +61,7 @@ void swap(Tp& lhs, Tp& rhs) {
 template <class ForwardIter1, class ForwatdIter2>
 ForwatdIter2 swap_range(ForwardIter1 first1, ForwardIter1 last,
                         ForwatdIter2 first2) {
-    for (; first1 != last1; ++first1, (void)++first2) {
+    for (; first1 != last; ++first1, (void)++first2) {
         mystl::swap(*first1, *first2);
     }
 
@@ -81,7 +81,7 @@ struct pair {
     typedef Ty2 second_type;
     first_type first;
     second_type second;
-    template <class Other = Ty1, class Other = Ty2,
+    template <class Other1 = Ty1, class Other2 = Ty2,
               typename = typename std::enable_if<
                   std::is_default_constructible<Other1>::value &&
                       std::is_default_constructible<Other2>::value,

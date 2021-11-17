@@ -79,8 +79,7 @@ OutputIter adjacent_difference(InputIter first, InputIter last,
 }
 
 template <class InputIter1, class InputIter2, class T>
-T inner_product(InputIter1 first1, InputIter1 last1, InputIter2 first2,
-                InputIter2 last2, T init) {
+T inner_product(InputIter1 first1, InputIter1 last1, InputIter2 first2, T init) {
     for (; first1 != last1; ++first1, ++first2) {
         init = init + (*first1 * *first2);
     }
@@ -89,8 +88,7 @@ T inner_product(InputIter1 first1, InputIter1 last1, InputIter2 first2,
 
 template <class InputIter1, class InputIter2, class T, class BinaryOp1,
           class BinaryOp2>
-T inner_product(InputIter1 first1, InputIter1 last1, InputIter2 first2,
-                InputIter2 last2, T init, BinaryOp1 binary_op1,
+T inner_product(InputIter1 first1, InputIter1 last1, InputIter2 first2, T init, BinaryOp1 binary_op1,
                 BinaryOp2 binary_op2) {
     for (; first1 != last1; ++first1, ++first2) {
         init = binary_op1(init, binary_op2(*first1, *first2));

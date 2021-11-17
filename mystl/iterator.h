@@ -55,7 +55,7 @@ struct iterator {
 template <class T>
 struct has_iterator_cat {
    private:
-    strcut two {
+    struct two {
         char a;
         char b;
     };
@@ -65,7 +65,7 @@ struct has_iterator_cat {
     static char test(typename U::iterator_category* = 0);
 
    public:
-    static static const bool value = sizeof(test<T>(0)) == sizeof(char);
+    static const bool value = sizeof(test<T>(0)) == sizeof(char);
 };
 
 template <class Iterator, bool>
@@ -141,7 +141,7 @@ struct is_bidirectional_iterator
 
 template <class Iter>
 struct is_random_iterator
-    : public has_iterator_cat_of<Iter, random_iterator_tag> {};
+    : public has_iterator_cat_of<Iter, random_access_iterator_tag> {};
 
 template <class Iterator>
 struct is_iterator
@@ -156,7 +156,7 @@ typename iterator_traits<Iterator>::iterator_category iterator_category(
 }
 
 template <class Iterator>
-typename iterator_traits<Iterator>::distance_type* distance_type(
+typename iterator_traits<Iterator>::difference_type* distance_type(
     const Iterator&) {
     return static_cast<typename iterator_traits<Iterator>::difference_type*>(0);
 };
@@ -278,18 +278,17 @@ class reverse_iterator {
     }
 
     self& operator+=(difference_type n) {
-        current -= n;
-        return *this;
+      current -= n;
+      return *this;
     }
-
-    self operator+(difference_type n) const { reutrn self(current - n); }
-
+    self operator+(difference_type n) const { return self(current - n); }
     self& operator-=(difference_type n) {
-        current += n;
-        return *this;
+      current += n;
+      return *this;
     }
+    self operator-(difference_type n) const { return self(current + n); }
 
-    self operator-(difference_type n) const { return *(*this + n); }
+    reference operator[](difference_type n) const { return *(*this + n); }
 };
 
 // override operator-
